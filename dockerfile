@@ -1,10 +1,11 @@
 FROM php:8.2-apache
 
-# Instalamos la extensión de base de datos
-RUN docker-php-ext-install pdo_mysql
+# 1. Instalamos las librerías de PostgreSQL y activamos los drivers PDO para Postgres
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Render inyecta la variable PORT. Configuramos Apache para que escuche en ese puerto
+# 2. Configuramos Apache para que escuche en el puerto dinámico de Render ($PORT)
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-# Copiamos nuestro código fuente a la carpeta pública de Apache
+# 3. Copiamos nuestro código fuente a la carpeta pública de Apache
 COPY src/ /var/www/html/
