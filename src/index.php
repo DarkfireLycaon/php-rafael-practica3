@@ -2,7 +2,7 @@
 require_once 'conexion.php';
 
 try {
-    $stmt = $pdo->query("SELECT * FROM alumnos");
+    $stmt = $conn->query("SELECT * FROM alumnos");
     $alumnos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Error en la consulta: " . $e->getMessage());
