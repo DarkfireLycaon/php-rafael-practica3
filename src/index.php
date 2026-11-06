@@ -1,29 +1,27 @@
 <?php
-require_once 'conexion.php';
+
 
 try {
-    $stmt = $conn->query("SELECT * FROM alumnos");
-    $alumnos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $conn = new PDO("pgsql:host=$host;port=$port;dbname=$db", $user, $pass);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 1. Crear la tabla si no existe
+    $sqlTable = "CREATE TABLE IF NOT EXISTS alumnos (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        email VARCHAR(150) UNIQUE NOT NULL,
+        edad INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );";
+    $conn->exec($sqlTable);
+
+    // 2. Insertar un registro de prueba si la tabla está vacía
+    $check = $conn->query("SELECT COUNT(*) FROM alumnos");
+    if ($check->fetchColumn() == 0) {
+        $conn->exec("INSERT INTO alumnos (nombre, email, edad) VALUES ('Rafael Torretta', 'rafael@example.com', 25);");
+    }
+
 } catch (PDOException $e) {
-    die("Error en la consulta: " . $e->getMessage());
+    die("❌ Error de conexión o inicialización: " . htmlspecialchars($e->getMessage()));
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Listado de Alumnos</title>
-</head>
-<body>
-  <h1>Listado de Alumnos</h1>
-  <?php if ($alumnos): ?>
-    <ul>
-      <?php foreach ($alumnos as $alumno): ?>
-        <li><?= htmlspecialchars($alumno['nombre']) ?> (<?= htmlspecialchars($alumno['email']) ?>)</li>
-      <?php endforeach; ?>
-    </ul>
-  <?php else: ?>
-    <p>No hay alumnos.</p>
-  <?php endif; ?>
-</body>
-</html>
