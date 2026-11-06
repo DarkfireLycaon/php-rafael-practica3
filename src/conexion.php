@@ -12,9 +12,6 @@ try {
     echo "❌ Error de conexión: " . $e->getMessage();
 }
     try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
 
     // Sentencia SQL para crear la tabla en PostgreSQL
     $sql = "CREATE TABLE IF NOT EXISTS alumnos (
@@ -25,7 +22,7 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );";
 
-    $pdo->exec($sql);
+    $conn->exec($sql);
     echo "<h1>¡Tabla 'alumnos' creada con éxito en PostgreSQL!</h1>";
 
 } catch (PDOException $e) {
